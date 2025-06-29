@@ -1,5 +1,4 @@
-// src/hooks/useWishlist.ts
-
+"use client";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist, removeFromWishlist } from "@/apis/server-apis";
@@ -52,7 +51,7 @@ export function useWishlist() {
         }
       }
     } catch (error) {
-      handleError(error);
+      // handleError(error);
     }
   };
 

@@ -13,7 +13,6 @@ import { IconButton } from "@mui/material";
 
 function AllBlogs({ blogData }: any) {
   const [blogs, setBlogs] = useState(blogData.blogs || []);
-  console.log("blogs", blogs);
   const [currentPage, setCurrentPage] = useState(blogData.page || 1);
   const [totalPages, setTotalPages] = useState(blogData.totalPages || 1);
   const [loading, setLoading] = useState(false);

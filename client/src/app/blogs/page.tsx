@@ -2,7 +2,6 @@
 import React from "react";
 import Layout from "../layout/Layout";
 import AllBlogs from "@/components/blog/AllBlogs";
-import { handleError } from "@/utils/response-handler";
 import { getAllBlog } from "@/apis/all-apis";
 
 const getAllBlogData = async () => {
@@ -12,7 +11,7 @@ const getAllBlogData = async () => {
     const response = await getAllBlog(initialPage, limit);
     return response;
   } catch (error) {
-    handleError(error);
+    // handleError(error);
   }
 };
 

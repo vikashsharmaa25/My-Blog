@@ -31,7 +31,7 @@ function CategoryManagement({ categoryData }: any) {
           const response = await getCategoryById("");
           setCategories(response.categories);
         } catch (err) {
-          console.error("Failed to fetch categories:", err);
+          // console.error("Failed to fetch categories:", err);
         }
       };
 

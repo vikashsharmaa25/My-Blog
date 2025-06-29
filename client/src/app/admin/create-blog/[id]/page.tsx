@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import React from "react";
 import AdminLayout from "../../AdminLayout";
 import AddBlog from "../AddBlog";

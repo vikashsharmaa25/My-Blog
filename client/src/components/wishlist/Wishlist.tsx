@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import Link from "next/link";
 
 function Wishlist({ wishlistData }: any) {
-  console.log("wishlistData", wishlistData);
   if (!wishlistData || wishlistData?.wishlist?.length === 0) {
     return (
       <div className="">

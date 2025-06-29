@@ -9,7 +9,7 @@ const getAllCategoryData = async () => {
     const response = await getAllcategory();
     return response;
   } catch (error) {
-    handleError(error);
+    // handleError(error);
   }
 };
 

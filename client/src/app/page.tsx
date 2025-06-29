@@ -12,7 +12,7 @@ const getAllCategoryData = async () => {
     const response = await getAllcategory();
     return response;
   } catch (error) {
-    handleError(error);
+    // handleError(error);
   }
 };
 const getAllBlogData = async () => {
@@ -20,7 +20,7 @@ const getAllBlogData = async () => {
     const response = await getAllBlog();
     return response;
   } catch (error) {
-    handleError(error);
+    // handleError(error);
   }
 };
 

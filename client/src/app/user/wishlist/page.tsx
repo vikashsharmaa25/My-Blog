@@ -1,7 +1,6 @@
 "use server";
 
 import Layout from "@/app/layout/Layout";
-import { handleError } from "@/utils/response-handler";
 import Wishlist from "@/components/wishlist/Wishlist";
 import React from "react";
 import { getBlogWishList } from "@/apis/server-apis";
@@ -12,9 +11,7 @@ const getWishListData = async () => {
   try {
     const response = await getBlogWishList(initialPage, limit);
     return response;
-  } catch (error) {
-    handleError(error);
-  }
+  } catch (error) {}
 };
 
 async function page() {

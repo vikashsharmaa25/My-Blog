@@ -10,7 +10,7 @@ const getBlogdata = async () => {
     const response = await getAllBlog();
     return response;
   } catch (error) {
-    handleError(error);
+    // handleError(error);
   }
 };
 
