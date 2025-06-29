@@ -6,7 +6,7 @@ import Image from "next/image";
 function Footer({ categoryData }: any) {
   return (
     <footer className="bg-black text-white">
-      <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Categories */}
         <div>
           <h3 className="text-lg font-bold mb-4 border-b-2 border-red-600 w-max pb-1">
@@ -25,7 +25,7 @@ function Footer({ categoryData }: any) {
         {/* Newsletter */}
         <div>
           <h3 className="text-lg font-bold mb-4 border-b-2 border-red-600 w-max pb-1">
-            Newsletter
+            subscribe
           </h3>
           <form className="space-y-4 text-sm">
             <input
@@ -48,37 +48,6 @@ function Footer({ categoryData }: any) {
           </form>
         </div>
 
-        {/* Recent Feeds */}
-        <div>
-          <h3 className="text-lg font-bold mb-4 border-b-2 border-red-600 w-max pb-1">
-            Recent Feeds
-          </h3>
-          <div className="space-y-4">
-            {[1, 2].map((item) => (
-              <div key={item} className="flex items-start space-x-4">
-                <div className="w-14 h-14 overflow-hidden rounded bg-gray-700">
-                  <Image
-                    src={DemoImage}
-                    alt="Recent feed"
-                    width={56}
-                    height={56}
-                  />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-xs mb-1">
-                    📅 24th February 2020
-                  </p>
-                  <p className="text-white text-sm font-semibold">
-                    {item === 1
-                      ? "Sparks Of Inspiration To The New Trend 2021"
-                      : "Career Certificates And More Ways We're"}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Brand Info */}
         <div>
           <div className="flex items-center space-x-3 mb-4">
@@ -86,7 +55,7 @@ function Footer({ categoryData }: any) {
               B
             </div>
             <h2 className="text-xl font-bold">
-              Binduz <span className="text-red-500">magazine</span>
+              World <span className="text-red-500">Blog</span>
             </h2>
           </div>
           <p className="text-sm text-gray-400 mb-4 leading-relaxed">
@@ -112,8 +81,7 @@ function Footer({ categoryData }: any) {
       <div className="bg-[#0d0d0d] py-4 text-sm text-gray-400 flex flex-col md:flex-row items-center justify-between px-4">
         <p>
           Copyright By
-          <span className="text-white font-medium ml-1">@QuomodoTheme</span> -
-          2021
+          <span className="text-white font-medium ml-1">@WorldBlog</span> - 2025
         </p>
         <div className="space-x-4 mt-2 md:mt-0">
           <a href="#" className="hover:text-white">
