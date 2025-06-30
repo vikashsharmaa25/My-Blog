@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://my-blog-1jl4.vercel.app/api/",
+    origin: "https://my-blog-1jl4.vercel.app",
     credentials: true,
   })
 );
