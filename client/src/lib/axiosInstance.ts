@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://my-blog-1jl4.vercel.app/api",
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -58,7 +58,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          "https://my-blog-1jl4.vercel.app/api/v1/user/refresh-token",
+          `${process.env.NEXT_PUBLIC_API_URL}/v1/user/refresh-token`,
           {},
           {
             withCredentials: true,

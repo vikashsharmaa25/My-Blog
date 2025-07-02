@@ -97,19 +97,21 @@ export const loginUser = async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    res.cookie("accessToken", accessToken, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 15 * 60 * 1000,
-    });
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    };
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res
+      .cookie("accessToken", accessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
     const userResponse = user.toObject();
     delete userResponse.password;
@@ -148,14 +150,23 @@ export const refreshToken = async (req, res) => {
 
     const newAccessToken = generateAccessToken(user);
 
-    res.cookie("accessToken", newAccessToken, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
-    });
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    };
 
-    res.json({ success: true, accessToken: newAccessToken });
+    res
+      .cookie("accessToken", newAccessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000,
+      })
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+    res.json({ success: true });
   } catch (error) {
     console.error("Refresh token error:", error);
     res
@@ -167,8 +178,15 @@ export const refreshToken = async (req, res) => {
 // Logout endpoint
 export const logoutUser = (req, res) => {
   try {
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    };
+
+    res
+      .clearCookie("accessToken", cookieOptions)
+      .clearCookie("refreshToken", cookieOptions);
 
     res.status(200).json({
       success: true,
