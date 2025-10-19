@@ -79,8 +79,6 @@ export const getBlogs = async (req, res) => {
       wishlist?.blogs?.map((id) => id.toString()) || []
     );
 
-    console.log("wishlist", wishlist);
-
     // Attach isInWishlist flag
     const blogsWithFlags = blogs.map((blog) => ({
       ...blog,
@@ -137,15 +135,21 @@ export const getBlogBySlug = async (req, res) => {
       });
     }
 
-    // Increment views
-    if (userId && !blog.viewedBy.includes(userId)) {
-      blog.views += 1;
-      blog.viewedBy.push(userId);
-      await blog.save();
+    // Increment views only once per unique logged-in user
+    if (userId) {
+      await Blog.updateOne(
+        { _id: blog._id, viewedBy: { $ne: userId } },
+        { $inc: { views: 1 }, $addToSet: { viewedBy: userId } }
+      );
     }
 
+    const refreshedBlog = await Blog.findById(blog._id).populate(
+      "category",
+      "name slug description"
+    );
+
     return successResponse(res, 200, "blog get successfully", {
-      blog,
+      blog: refreshedBlog,
     });
   } catch (error) {
     return errorResponse(res, 500, "Internal server error", error.message);
@@ -219,6 +223,14 @@ export const deleteBlog = async (req, res) => {
 
     // Remove blog from database
     await Blog.findByIdAndDelete(req.params.id);
+
+    // Cascade delete comments associated with this blog
+    try {
+      const { default: Comment } = await import("../models/comment.js");
+      await Comment.deleteMany({ blog: req.params.id });
+    } catch (e) {
+      // ignore if comments model not available
+    }
 
     successResponse(res, 200, "Blog deleted successfully!");
   } catch (error) {

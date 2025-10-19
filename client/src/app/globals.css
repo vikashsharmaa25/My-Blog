@@ -30,7 +30,7 @@
 }
 
 .MuiDialog-root {
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(3px);
 }
 
 .MuiModal-backdrop {

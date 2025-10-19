@@ -2,11 +2,14 @@
 
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Image from "next/image";
-import { User, Mail, Upload, Camera } from "lucide-react";
+import { User, Mail, Upload, Camera, Heart, UserCircle2 } from "lucide-react";
 import { updateUserProfile } from "@/apis/all-apis";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { handleError, handleSuccess } from "@/utils/response-handler";
+import { loginSuccess } from "@/slice/authSlice";
 
 export default function UpdateProfile() {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -47,13 +50,6 @@ export default function UpdateProfile() {
     e.preventDefault();
     setIsLoading(true);
 
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      alert("User is not authenticated!");
-      setIsLoading(false);
-      return;
-    }
-
     const formDataToSend = new FormData();
     formDataToSend.append("username", formData.username);
     formDataToSend.append("email", formData.email);
@@ -63,17 +59,23 @@ export default function UpdateProfile() {
 
     try {
       const response = await updateUserProfile(formDataToSend);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          _id: response.user._id,
-          username: response.user.username,
-          email: response.user.email,
-          profilePic: response.user.profilePic,
+      // Update Redux so header/avatar reflect changes immediately
+      const prevAuth = user; // { user: {...}, accessToken }
+      const mergedUser = {
+        ...(prevAuth?.user || {}),
+        username: response.user.username,
+        email: response.user.email,
+        profilePic: response.user.profilePic,
+      };
+      dispatch(
+        loginSuccess({
+          user: mergedUser,
+          accessToken: prevAuth?.accessToken,
         })
       );
+      handleSuccess(response?.message || "Profile updated successfully");
     } catch (error) {
-      console.error("Profile update failed:", error);
+      handleError(error);
     }
 
     setIsLoading(false);
@@ -81,93 +83,120 @@ export default function UpdateProfile() {
 
   return (
     <>
-      <div className=" flex items-center justify-center p-4">
-        <div className="relative rounded-3xl border max-w-md w-full p-8">
-          <h2 className="text-4xl font-semibold text-center text-gray-900 mb-8 tracking-tight">
-            Edit Your Profile
-          </h2>
+      <div className="min-h-[calc(100vh-120px)] bg-white">
+        {/* Header Banner */}
+        <div className="bg-blue-600">
+          <div className="mx-auto max-w-5xl px-4 py-10 text-white">
+            <div className="flex items-center gap-3">
+              <UserCircle2 className="w-8 h-8" />
+              <h1 className="text-2xl font-semibold">Your Profile</h1>
+            </div>
+            <p className="opacity-90 mt-1">Manage your personal information and avatar</p>
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Profile Picture Upload */}
-            <div className="flex flex-col items-center group">
-              <div className="relative mb-4">
-                <div className="w-24 h-24 rounded-full bg-gray-100 border-4 border-emerald-100 flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform duration-300">
-                  {previewImage ? (
-                    <Image
-                      src={previewImage}
-                      alt="Profile Preview"
-                      className="w-full h-full object-cover"
-                      width={96}
-                      height={96}
-                    />
-                  ) : (
-                    <Camera className="w-8 h-8 text-emerald-400 group-hover:text-emerald-500 transition-colors duration-300" />
-                  )}
+        {/* Content */}
+        <div className="mx-auto max-w-5xl px-4 -mt-8 pb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Left: Profile Card */}
+            <div className="md:col-span-1">
+              <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+                <div className="flex flex-col items-center">
+                  <div className="relative mb-3">
+                    <div className="w-28 h-28 rounded-full bg-gray-100 border-4 border-blue-100 overflow-hidden">
+                      {previewImage ? (
+                        <Image src={previewImage} alt="Profile Preview" className="w-full h-full object-cover" width={112} height={112} />
+                      ) : user?.user?.profilePic ? (
+                        <Image src={user?.user?.profilePic} alt="Profile" className="w-full h-full object-cover" width={112} height={112} />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-500">
+                          <Camera className="w-7 h-7" />
+                        </div>
+                      )}
+                    </div>
+                    <label
+                      htmlFor="profile-upload"
+                      className="absolute -bottom-2 -right-2 w-9 h-9 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center cursor-pointer shadow-md"
+                    >
+                      <Upload className="w-4 h-4 text-white" />
+                    </label>
+                    <input id="profile-upload" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-semibold text-gray-900">{formData.username || "User"}</div>
+                    <div className="text-sm text-gray-600">{formData.email}</div>
+                  </div>
+                  <div className="mt-4 w-full grid grid-cols-2 gap-3 text-center">
+                    <div className="rounded-xl border border-gray-200 p-3">
+                      <div className="text-xs text-gray-500">Wishlist</div>
+                      <div className="flex items-center justify-center gap-1 text-gray-900 font-semibold">
+                        <Heart className="w-4 h-4 text-red-500" />
+                        {user?.user?.wishlist?.length ?? 0}
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 p-3">
+                      <div className="text-xs text-gray-500">Member</div>
+                      <div className="text-gray-900 font-semibold">{new Date(user?.user?.createdAt || Date.now()).toLocaleDateString()}</div>
+                    </div>
+                  </div>
                 </div>
-                <label
-                  htmlFor="profile-upload"
-                  className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 hover:bg-emerald-600 rounded-full flex items-center justify-center cursor-pointer transition-all duration-200 group-hover:scale-125 shadow-md"
-                >
-                  <Upload className="w-4 h-4 text-white" />
-                </label>
-                <input
-                  id="profile-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
               </div>
-              <p className="text-sm text-gray-500 group-hover:text-emerald-500 transition-colors duration-300">
-                Upload a new profile photo
-              </p>
             </div>
 
-            {/* Username Input */}
-            <div className="relative group">
-              <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-400 w-6 h-6 group-hover:text-emerald-500 transition-colors duration-300" />
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
-                className="w-full pl-14 pr-4 py-3 bg-gray-50 border-2 border-emerald-100 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:ring-4 focus:ring-emerald-200 transition-all duration-300 hover:shadow-md"
-                placeholder="Your username"
-                required
-              />
-            </div>
+            {/* Right: Edit Form */}
+            <div className="md:col-span-2">
+              <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-6">Edit Your Profile</h2>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 w-5 h-5" />
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all"
+                      placeholder="Your username"
+                      required
+                      autoComplete="username"
+                    />
+                  </div>
 
-            {/* Email Input */}
-            <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-400 w-6 h-6 group-hover:text-emerald-500 transition-colors duration-300" />
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full pl-14 pr-4 py-3 bg-gray-50 border-2 border-emerald-100 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:ring-4 focus:ring-emerald-200 transition-all duration-300 hover:shadow-md"
-                placeholder="Your email address"
-              />
-            </div>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 w-5 h-5" />
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-blue-100 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all"
+                      placeholder="Your email address"
+                      autoComplete="email"
+                    />
+                  </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Updating Profile...
-                </div>
-              ) : (
-                "Save Changes"
-              )}
-            </button>
-          </form>
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all disabled:opacity-50"
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Updating Profile...
+                        </div>
+                      ) : (
+                        "Save Changes"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

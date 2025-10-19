@@ -33,7 +33,8 @@ axiosInstance.interceptors.response.use(
     // ✅ Exclude login/register routes from refresh logic
     const isAuthRoute =
       originalRequest.url.includes("/v1/user/login") ||
-      originalRequest.url.includes("/v1/user/register");
+      originalRequest.url.includes("/v1/user/register") ||
+      originalRequest.url.includes("/v1/user/refresh-token");
 
     if (
       error.response?.status === 401 &&
@@ -44,10 +45,7 @@ axiosInstance.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then((token) => {
-            if (token) {
-              originalRequest.headers["Authorization"] = `Bearer ${token}`;
-            }
+          .then(() => {
             return axiosInstance(originalRequest);
           })
           .catch((err) => Promise.reject(err));
@@ -65,17 +63,26 @@ axiosInstance.interceptors.response.use(
           }
         );
 
-        const newAccessToken = response.data.accessToken;
+        if (response.data?.success) {
+          processQueue(null, null);
+          return axiosInstance(originalRequest);
+        }
 
-        axiosInstance.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${newAccessToken}`;
-        processQueue(null, newAccessToken);
-
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        return axiosInstance(originalRequest);
-      } catch (err) {
+        const err = new Error("Refresh token failed");
         processQueue(err, null);
+        return Promise.reject(err);
+      } catch (err: any) {
+        processQueue(err, null);
+        try {
+          if (
+            err?.response?.status === 401 ||
+            err?.response?.status === 403
+          ) {
+            if (typeof window !== "undefined") {
+              window.location.assign("/login");
+            }
+          }
+        } catch (_) {}
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

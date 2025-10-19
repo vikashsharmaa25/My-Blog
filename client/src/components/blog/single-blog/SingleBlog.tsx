@@ -12,6 +12,7 @@ import {
   Eye,
 } from "lucide-react";
 import Image from "next/image";
+import Comments from "./Comments";
 
 function SingleBlog({ singleBlogData }: any) {
   const blogData = singleBlogData;
@@ -89,6 +90,9 @@ function SingleBlog({ singleBlogData }: any) {
             ))}
           </div>
         </div>
+
+        {/* Comments */}
+        {blogData?._id && <Comments blogId={blogData._id} />}
       </article>
     </div>
   );

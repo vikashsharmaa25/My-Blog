@@ -25,7 +25,9 @@ const LoginPage: React.FC<any> = ({ onSuccess }) => {
     }
   }, [user, router, onSuccess]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
+    if (isLoading) return;
     setIsLoading(true);
     try {
       const response = await loginUser(email, password);
@@ -46,40 +48,45 @@ const LoginPage: React.FC<any> = ({ onSuccess }) => {
       {/* Header */}
       <div className="text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 shadow border">
-          <Lock className="w-8 h-8 text-gray-500" />
+          <Lock className="w-8 h-8 text-gray-700" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-600 mb-2">Welcome Back</h2>
-        <p className="text-gray-500">Sign in to your account to continue</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome Back</h2>
+        <p className="text-gray-700">Sign in to your account to continue</p>
       </div>
 
       {/* Login form */}
-      <div className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 w-5 h-5" />
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-5 h-5" />
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="w-full pl-12 pr-12 py-3  text-gray-600 border border-gray-600 rounded-xl placeholder-gray-600 transition-all duration-300 outline-none"
+            className="w-full pl-12 pr-12 py-3  text-gray-700 border border-gray-700 rounded-xl placeholder-gray-700 transition-all duration-300 outline-none"
             required
+            autoComplete="email"
+            inputMode="email"
+            aria-label="Email address"
           />
         </div>
 
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 w-5 h-5" />
+          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-5 h-5" />
           <input
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="w-full pl-12 pr-12 py-3  text-gray-600 border border-gray-600 rounded-xl placeholder-gray-600 transition-all duration-300 outline-none"
+            className="w-full pl-12 pr-12 py-3  text-gray-700 border border-gray-700 rounded-xl placeholder-gray-700 transition-all duration-300 outline-none"
             required
+            autoComplete="current-password"
+            aria-label="Password"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-white transition-colors"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-700 hover:text-white transition-colors"
           >
             {showPassword ? (
               <EyeOff className="w-5 h-5" />
@@ -90,7 +97,7 @@ const LoginPage: React.FC<any> = ({ onSuccess }) => {
         </div>
 
         <button
-          onClick={handleSubmit}
+          type="submit"
           disabled={isLoading || !email || !password}
           className="w-full text-white bg-red-500 font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -103,7 +110,7 @@ const LoginPage: React.FC<any> = ({ onSuccess }) => {
             "Sign In"
           )}
         </button>
-      </div>
+      </form>
     </div>
   );
 };

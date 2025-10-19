@@ -34,7 +34,9 @@ function SignupPage({ setActiveTab }: any) {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
+    if (isLoading) return;
     setIsLoading(true);
 
     try {
@@ -61,7 +63,7 @@ function SignupPage({ setActiveTab }: any) {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <Camera className="w-6 h-6 text-gray-600" />
+              <Camera className="w-6 h-6 text-gray-700" />
             )}
           </div>
           <label
@@ -78,51 +80,60 @@ function SignupPage({ setActiveTab }: any) {
             className="hidden"
           />
         </div>
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-gray-700 text-center">
           Upload your profile photo
         </p>
       </div>
 
       {/* Signup form */}
-      <div className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <div className="relative">
-          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-5 h-5" />
           <input
             type="text"
             value={formData.username}
             onChange={(e) => handleInputChange("username", e.target.value)}
             placeholder="Username"
-            className="w-full pl-12 pr-12 py-3  text-gray-600 border border-gray-600 rounded-xl placeholder-gray-600 transition-all duration-300 outline-none"
+            className="w-full pl-12 pr-12 py-3  text-gray-700 border border-gray-600 rounded-xl placeholder-gray-600 transition-all duration-300 outline-none"
             required
+            minLength={2}
+            autoComplete="username"
+            aria-label="Username"
           />
         </div>
 
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-5 h-5" />
           <input
             type="email"
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder="Email"
-            className="w-full pl-12 pr-12 py-3  text-gray-600 border border-gray-600 rounded-xl placeholder-gray-600 transition-all duration-300 outline-none"
+            className="w-full pl-12 pr-12 py-3  text-gray-700 border border-gray-700 rounded-xl placeholder-gray-700 transition-all duration-300 outline-none"
             required
+            autoComplete="email"
+            inputMode="email"
+            aria-label="Email address"
           />
         </div>
 
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-5 h-5" />
           <input
             type={showPassword ? "text" : "password"}
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             placeholder="Create password"
-            className="w-full pl-12 pr-12 py-3  text-gray-600 border border-gray-600 rounded-xl placeholder-gray-600 transition-all duration-300 outline-none"
+            className="w-full pl-12 pr-12 py-3  text-gray-700 border border-gray-700 rounded-xl placeholder-gray-700 transition-all duration-300 outline-none"
             required
+            minLength={6}
+            autoComplete="new-password"
+            aria-label="Create password"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-700 hover:text-white transition-colors"
           >
             {showPassword ? (
               <EyeOff className="w-5 h-5" />
@@ -148,7 +159,7 @@ function SignupPage({ setActiveTab }: any) {
               ></div>
             ))}
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-700">
             Password strength:
             {formData.password.length >= 8
               ? "Strong"
@@ -159,7 +170,7 @@ function SignupPage({ setActiveTab }: any) {
         </div>
 
         <button
-          onClick={handleSubmit}
+          type="submit"
           disabled={isLoading || !formData.email || !formData?.password}
           className="w-full text-white bg-red-500 font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -172,7 +183,7 @@ function SignupPage({ setActiveTab }: any) {
             "Create Account"
           )}
         </button>
-      </div>
+      </form>
     </div>
   );
 }

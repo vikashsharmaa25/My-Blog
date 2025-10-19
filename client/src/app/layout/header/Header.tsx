@@ -69,7 +69,8 @@ function Header({ categoryData, cookiesData }: any) {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-between px-4 py-6 max-w-[1250px] mx-auto gap-4 sm:gap-0">
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b">
+        <div className="flex flex-row items-center justify-between px-4 py-4 max-w-[1250px] mx-auto gap-4 sm:gap-0">
         {/* Social Icons */}
         <div className="sm:flex hidden items-center justify-center sm:justify-start gap-4 text-black">
           <div className="flex space-x-3 mt-4">
@@ -89,12 +90,12 @@ function Header({ categoryData, cookiesData }: any) {
         </div>
 
         {/* Logo */}
-        <Link href="/" className="text-center sm:text-left">
-          <span className="sm:text-3xl text-2xl uppercase font-extrabold text-black">
-            World
+        <Link href="/" className="text-center sm:text-left select-none">
+          <span className="sm:text-3xl text-2xl font-extrabold tracking-tight bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">
+            Tech
           </span>
-          <span className="sm:text-3xl text-2xl uppercase font-extrabold text-red-600 ml-2">
-            blog
+          <span className="sm:text-3xl text-2xl font-extrabold ml-1 text-gray-900">
+            Blog
           </span>
         </Link>
 
@@ -103,13 +104,12 @@ function Header({ categoryData, cookiesData }: any) {
           {user ? (
             <>
               <IconButton onClick={handleOpenMenu} className="profile_pic">
-                {user?.profilePic ? (
+                {user?.user?.profilePic ? (
                   <Image
-                    src={user?.profilePic}
+                    src={user?.user?.profilePic}
                     alt="Profile"
                     width={40}
                     height={40}
-                    objectFit="fill"
                     className="rounded-full"
                   />
                 ) : (
@@ -163,13 +163,20 @@ function Header({ categoryData, cookiesData }: any) {
             </>
           ) : (
             <Button
-              variant="text"
-              className="hover-underline"
+              variant="contained"
               onClick={() => setOpenDialog(true)}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                background: "linear-gradient(90deg, #2563eb, #3b82f6)",
+                boxShadow: "0 8px 24px rgba(37, 99, 235, 0.25)",
+                ":hover": { background: "linear-gradient(90deg, #1d4ed8, #2563eb)" },
+              }}
             >
               Sign In / Sign Up
             </Button>
           )}
+        </div>
         </div>
       </div>
 

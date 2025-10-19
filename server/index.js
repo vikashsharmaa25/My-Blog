@@ -1,6 +1,6 @@
 import express from "express";
-dotenv.config();
 import dotenv from "dotenv";
+dotenv.config();
 import { connection } from "./configs/database.js";
 import userRoutes from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser";
@@ -10,6 +10,7 @@ import categoryRouter from "./routes/categoryRoute.js";
 import blogRouter from "./routes/blogRoute.js";
 import allCountRoute from "./routes/allCountRoute.js";
 import wishlistRouter from "./routes/wishlistRoute.js";
+import commentRoutes from "./routes/commentRoutes.js";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,7 @@ app.use("/api/v1/admin", allCountRoute);
 // Public route
 app.use("/api/v1", categoryRouter);
 app.use("/api/v1", blogRouter);
+app.use("/api/v1", commentRoutes);
 
 connection();
 const port = process.env.PORT || 4001;
