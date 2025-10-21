@@ -10,6 +10,7 @@ import {
   getCategoryById,
   updateCategory,
 } from "../controllers/categoryController.js";
+import { upload } from "../configs/cloudinary.js";
 
 const categoryRouter = express.Router();
 
@@ -18,12 +19,14 @@ categoryRouter.post(
   "/create-category",
   authenticateUser,
   authenticateAdmin,
+  upload.single("categoryImage"),
   createCategory
 );
 categoryRouter.put(
   "/update-category/:id",
   authenticateUser,
   authenticateAdmin,
+  upload.single("categoryImage"),
   updateCategory
 );
 

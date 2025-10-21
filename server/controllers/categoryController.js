@@ -1,14 +1,15 @@
 import Blog from "../models/blog.js";
 import Category from "../models/category.js";
+import { cloudinary } from "../configs/cloudinary.js";
 
 export const createCategory = async (req, res) => {
   try {
     const { name, description, isActive } = req.body;
 
-    if (!name || !description || isActive) {
+    if (!name || !description) {
       return res.status(400).json({
         success: false,
-        message: "Name and description and isActive are required",
+        message: "Name and description are required",
       });
     }
 
@@ -25,6 +26,13 @@ export const createCategory = async (req, res) => {
       description,
       isActive: isActive !== undefined ? Boolean(isActive) : true,
     });
+
+    if (req.file) {
+      newCategory.categoryImage = {
+        url: req.file.path,
+        publicId: req.file.filename,
+      };
+    }
 
     await newCategory.save();
 
@@ -115,6 +123,20 @@ export const updateCategory = async (req, res) => {
     if (description !== undefined) category.description = description;
     if (isActive !== undefined) category.isActive = isActive;
 
+    // Handle image update
+    if (req.file) {
+      // delete old image if present
+      if (category.categoryImage?.publicId) {
+        try {
+          await cloudinary.uploader.destroy(category.categoryImage.publicId);
+        } catch (_) {}
+      }
+      category.categoryImage = {
+        url: req.file.path,
+        publicId: req.file.filename,
+      };
+    }
+
     await category.save();
 
     res.status(201).json({
@@ -146,6 +168,13 @@ export const deleteCategory = async (req, res) => {
         success: false,
         message: `Cannot delete category. It is being used by ${blogsCount} blog(s)`,
       });
+    }
+
+    // delete image from cloudinary if present
+    if (category.categoryImage?.publicId) {
+      try {
+        await cloudinary.uploader.destroy(category.categoryImage.publicId);
+      } catch (_) {}
     }
 
     await Category.findByIdAndDelete(req.params.id);

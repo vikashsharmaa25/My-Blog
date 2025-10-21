@@ -7,7 +7,7 @@ import {
   updateCategory,
   deleteCategoryById,
 } from "@/apis/all-apis";
-import { Button } from "@mui/material";
+import { Button, TextField, Paper, Typography, Chip, Stack, IconButton, Avatar, Box } from "@mui/material";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import { handleError, handleSuccess } from "@/utils/response-handler";
 
@@ -23,6 +23,8 @@ function CategoryManagement({ categoryData }: any) {
   const [editCategoryName, setEditCategoryName] = useState("");
   const [editCategoryDescription, setEditCategoryDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   useEffect(() => {
     if (!categoryData?.categories) {
@@ -48,10 +50,13 @@ function CategoryManagement({ categoryData }: any) {
       const response = await addCategory({
         name: newCategoryName,
         description: newCategoryDescription,
+        categoryImage: selectedFile as any,
       });
       setCategories([...categories, response.category]);
       setNewCategoryName("");
       setNewCategoryDescription("");
+      setSelectedFile(null);
+      setPreviewUrl("");
       handleSuccess(response?.message);
     } catch (error) {
       handleError(error);
@@ -68,7 +73,11 @@ function CategoryManagement({ categoryData }: any) {
 
     try {
       const response = await updateCategory(
-        { name: editCategoryName, description: editCategoryDescription },
+        {
+          name: editCategoryName,
+          description: editCategoryDescription,
+          ...(selectedFile ? { categoryImage: selectedFile as any } : {}),
+        },
         editingCategoryId
       );
       const updatedCategories = categories.map((category) =>
@@ -78,6 +87,8 @@ function CategoryManagement({ categoryData }: any) {
       setEditingCategoryId(null);
       setEditCategoryName("");
       setEditCategoryDescription("");
+      setSelectedFile(null);
+      setPreviewUrl("");
       handleSuccess(response?.message);
     } catch (error) {
       handleError(error);
@@ -102,73 +113,111 @@ function CategoryManagement({ categoryData }: any) {
     <div>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <Typography variant="h5" fontWeight={700} color="primary.main">
             Manage Categories
-          </h2>
-          {/* <button
-            className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-            onClick={() => setEditingCategoryId(null)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Category
-          </button> */}
+          </Typography>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Add Category Form */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <Paper variant="outlined" className="p-6" sx={{ borderRadius: 2, bgcolor: 'background.paper' }}>
+            <Typography variant="h6" mb={2} color="primary.main">
               {editingCategoryId ? "Edit Category" : "Add New Category"}
-            </h3>
+            </Typography>
             <form
               className="space-y-4"
               onSubmit={
                 editingCategoryId ? handleUpdateCategory : handleAddCategory
               }
             >
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  placeholder="Enter category name"
-                  value={editingCategoryId ? editCategoryName : newCategoryName}
-                  onChange={(e) =>
-                    editingCategoryId
-                      ? setEditCategoryName(e.target.value)
-                      : setNewCategoryName(e.target.value)
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                  placeholder="Enter category description"
-                  value={
-                    editingCategoryId
-                      ? editCategoryDescription
-                      : newCategoryDescription
-                  }
-                  onChange={(e) =>
-                    editingCategoryId
-                      ? setEditCategoryDescription(e.target.value)
-                      : setNewCategoryDescription(e.target.value)
-                  }
-                ></textarea>
-              </div>
+              {/* Image Uploader */}
+              <Box>
+                <Typography variant="body2" color="text.secondary" mb={1}>
+                  Category Image
+                </Typography>
+                <Box
+                  sx={{
+                    border: '1px dashed',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    p: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    cursor: 'pointer',
+                    bgcolor: 'grey.50',
+                  }}
+                  onClick={() => document.getElementById('catFileInput')?.click()}
+                >
+                  <Avatar variant="rounded" sx={{ width: 56, height: 56 }}>
+                    {previewUrl ? (
+                      <img src={previewUrl} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <Plus size={18} />
+                    )}
+                  </Avatar>
+                  <div>
+                    <Typography variant="body2" color="text.primary" fontWeight={600}>
+                      {selectedFile ? selectedFile.name : 'Click to upload'}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      JPG or PNG up to 5MB
+                    </Typography>
+                  </div>
+                  <input
+                    id="catFileInput"
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setSelectedFile(file);
+                      setPreviewUrl(file ? URL.createObjectURL(file) : "");
+                    }}
+                  />
+                </Box>
+              </Box>
+              <TextField
+                fullWidth
+                label="Category Name"
+                value={editingCategoryId ? editCategoryName : newCategoryName}
+                onChange={(e) =>
+                  editingCategoryId
+                    ? setEditCategoryName(e.target.value)
+                    : setNewCategoryName(e.target.value)
+                }
+                variant="outlined"
+                size="small"
+                margin="dense"
+                color="primary"
+                
+              />
+              <TextField
+                fullWidth
+                label="Description"
+                variant="outlined"
+                size="small"
+                margin="dense"
+                color="primary"
+                multiline
+                rows={3}
+                value={
+                  editingCategoryId
+                    ? editCategoryDescription
+                    : newCategoryDescription
+                }
+                onChange={(e) =>
+                  editingCategoryId
+                    ? setEditCategoryDescription(e.target.value)
+                    : setNewCategoryDescription(e.target.value)
+                }
+              />
               <Button
                 type="submit"
-                variant="outlined"
-                disabled={
-                  loading || !newCategoryName || !newCategoryDescription
-                }
-                className="w-full"
+                variant="contained"
+                color="primary"
+                disabled={loading || (!editingCategoryId && (!newCategoryName || !newCategoryDescription))}
+                className="btn primary_button w-full"
               >
                 {loading
                   ? "Processing..."
@@ -177,48 +226,54 @@ function CategoryManagement({ categoryData }: any) {
                   : "Add Category"}
               </Button>
             </form>
-          </div>
+          </Paper>
 
           {/* Categories List */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <Paper variant="outlined" className="p-6" sx={{ borderRadius: 2, bgcolor: 'background.paper' }}>
+            <Typography variant="h6" mb={2} color="primary.main">
               Existing Categories
-            </h3>
-            <div className="space-y-3">
+            </Typography>
+            <Stack spacing={1.5}>
               {categories.map((category: any) => (
-                <div
-                  key={category._id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                >
-                  <div className="flex items-center space-x-3">
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${category.color}`}
-                    >
-                      {category.name}
-                    </span>
+                <Paper key={category._id} variant="outlined" sx={{ p: 1.5, bgcolor: 'grey.50', borderRadius: 2 }}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar variant="rounded" sx={{ width: 36, height: 36 }}>
+                        {category?.categoryImage?.url ? (
+                          <img src={category.categoryImage.url} alt={category.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          category.name.charAt(0)
+                        )}
+                      </Avatar>
+                      <Chip label={category.name} size="small" color="primary" variant="outlined" />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => {
+                          setEditingCategoryId(category._id);
+                          setEditCategoryName(category.name);
+                          setEditCategoryDescription(category.description);
+                          setSelectedFile(null);
+                          setPreviewUrl(category?.categoryImage?.url || "");
+                        }}
+                      >
+                        <Edit size={16} />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteCategory(category._id)}
+                      >
+                        <Trash2 size={16} />
+                      </IconButton>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      className="action-btn"
-                      onClick={() => {
-                        setEditingCategoryId(category._id);
-                        setEditCategoryName(category.name);
-                        setEditCategoryDescription(category.description);
-                      }}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      className="action-btn hover:text-red-700"
-                      onClick={() => handleDeleteCategory(category._id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+                </Paper>
               ))}
-            </div>
-          </div>
+            </Stack>
+          </Paper>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist, removeFromWishlist } from "@/apis/server-apis";
 import { handleError, handleSuccess } from "@/utils/response-handler";
@@ -8,9 +9,9 @@ import { updateWishlist } from "@/slice/authSlice";
 export function useWishlist() {
   const { user } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
-  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     if (user?.user?.wishlist) {
@@ -20,7 +21,7 @@ export function useWishlist() {
 
   const toggleWishlist = async (blogId: string) => {
     if (!user) {
-      setOpenDialog(true);
+      router.push("/auth?mode=login");
       return;
     }
 
@@ -58,7 +59,5 @@ export function useWishlist() {
   return {
     wishlistIds,
     toggleWishlist,
-    openDialog,
-    setOpenDialog,
   };
 }

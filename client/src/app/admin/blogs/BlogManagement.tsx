@@ -15,6 +15,15 @@ import {
   MenuItem,
   InputBase,
   CircularProgress,
+  Box,
+  Typography,
+  Chip,
+  Avatar,
+  IconButton,
+  Container,
+  Stack,
+  InputAdornment,
+  TextField,
 } from "@mui/material";
 import {
   Calendar,
@@ -24,6 +33,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Filter,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -88,179 +98,299 @@ function BlogManagement({ initialData }: any) {
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Manage Blogs</h2>
-        <Link
-          href="/admin/create-blog"
-          className="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+    <Box sx={{ bgcolor: "white", minHeight: "100vh", py: 4 }}>
+      <Container>
+        {/* Header */}
+        <Box
+          display="flex"
+          flexDirection={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "stretch", sm: "center" }}
+          mb={4}
+          gap={2}
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Blog
-        </Link>
-      </div>
+          <Box>
+            <Typography variant="h5" fontWeight={500} color="text.primary" gutterBottom>
+              Manage Blogs
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Create, edit, and manage your blog posts
+            </Typography>
+          </Box>
+          <Link href="/admin/create-blog" style={{ textDecoration: "none" }}>
+            <Button
+              variant="contained"
+              startIcon={<Plus size={18} />}
+             className="primary_button"
+            >
+              Add New Blog
+            </Button>
+          </Link>
+        </Box>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center space-x-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <InputBase
-              placeholder="Search blogs..."
-              fullWidth
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-          <Select defaultValue="All" displayEmpty className="w-40" size="small">
-            <MenuItem value="All">All Status</MenuItem>
-            <MenuItem value="Published">Published</MenuItem>
-            <MenuItem value="Draft">Draft</MenuItem>
-          </Select>
-        </div>
+        {/* Filters & Search */}
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            mb: 3,
+            overflow: "hidden",
+          }}
+        >
+          <Box
+            sx={{
+              p: 3,
+              background: "linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)",
+              borderBottom: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              alignItems={{ xs: "stretch", sm: "center" }}
+            >
+              <TextField
+                placeholder="Search blogs..."
+                size="small"
+                fullWidth
+                sx={{
+                  maxWidth: { sm: 400 },
+                  bgcolor: "white",
+                  borderRadius: 2,
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                  },
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search size={18} color="#64748B" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Select
+                defaultValue="All"
+                size="small"
+                sx={{
+                  minWidth: 160,
+                  bgcolor: "white",
+                  borderRadius: 2,
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderRadius: 2,
+                  },
+                }}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <Filter size={16} color="#64748B" />
+                  </InputAdornment>
+                }
+              >
+                <MenuItem value="All">All Status</MenuItem>
+                <MenuItem value="Published">Published</MenuItem>
+                <MenuItem value="Draft">Draft</MenuItem>
+              </Select>
+            </Stack>
+          </Box>
 
-        {loading ? (
-          <div className="p-8 flex justify-center">
-            <CircularProgress />
-          </div>
-        ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <b>Title</b>
-                  </TableCell>
-                  <TableCell>
-                    <b>Status</b>
-                  </TableCell>
-                  <TableCell>
-                    <b>Featured</b>
-                  </TableCell>
-                  <TableCell>
-                    <b>Date</b>
-                  </TableCell>
-                  <TableCell>
-                    <b>Views</b>
-                  </TableCell>
-                  <TableCell>
-                    <b>Actions</b>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {blogs.map((blog: any) => (
-                  <TableRow key={blog._id} hover>
-                    <TableCell>
-                      <div className="flex items-center gap-4">
-                        <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-                          {blog?.blogImage[0]?.url ? (
-                            <Image
-                              src={blog.blogImage[0].url}
-                              alt="Blog Image"
-                              width={100}
-                              height={100}
-                              className="object-fill w-full h-full"
-                            />
-                          ) : (
-                            <div className="mt-1 ml-2">
-                              <ImageIcon size={30} />
-                            </div>
-                          )}
-                        </div>
-                        <Tooltip
-                          title={blog?.title}
-                          arrow
-                          placement="top-start"
-                        >
-                          <span>
-                            {blog?.title.length > 30
-                              ? `${blog?.title.slice(0, 30)}...`
-                              : blog.title}
-                          </span>
-                        </Tooltip>
-                      </div>
+          {/* Table */}
+          {loading ? (
+            <Box display="flex" justifyContent="center" alignItems="center" py={8}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <TableContainer>
+              <Table sx={{ minWidth: 800 }}>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: "#F8FAFB" }}>
+                    <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
+                      Title
                     </TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                          blog?.isPublished
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-red-100 text-yellow-800"
-                        }`}
-                      >
-                        {blog?.isPublished ? "Published" : "Draft"}
-                      </span>
+                    <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
+                      Status
                     </TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                          blog?.isfeatured === true
-                            ? "bg-blue-100 text-emerald-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {blog?.isfeatured === true ? "Yes" : "No"}
-                      </span>
+                    <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
+                      Featured
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <Calendar size={12} />
-                        {new Date(blog?.publishedDate).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}
-                      </div>
+                    <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
+                      Date
                     </TableCell>
-                    <TableCell>{blog.views}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <Link
-                          href={`/blog/${blog?.slug}`}
-                          className="text-emerald-600 hover:text-emerald-900"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                        <Button
-                          onClick={() => handleEdit(blog._id)}
-                          className="action-btn"
-                        >
-                          <Edit className="h-4 w-4 text-blue-600" />
-                        </Button>
-                        <Button
-                          onClick={() => openDeleteDialog(blog._id)}
-                          className="action-btn"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-600" />
-                        </Button>
-                      </div>
+                    <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
+                      Views
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: "text.primary" }}>
+                      Actions
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {blogs.map((blog: any) => (
+                    <TableRow
+                      key={blog._id}
+                      hover
+                      sx={{
+                        "&:hover": {
+                          bgcolor: "#F8FAFB",
+                        },
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      <TableCell>
+                        <Box display="flex" alignItems="center" gap={2}>
+                          <Avatar
+                            variant="rounded"
+                            sx={{
+                              width: 48,
+                              height: 48,
+                              bgcolor: "primary.50",
+                              border: "2px solid",
+                              borderColor: "divider",
+                            }}
+                          >
+                            {blog?.blogImage[0]?.url ? (
+                              <Image
+                                src={blog.blogImage[0].url}
+                                alt="Blog Image"
+                                width={48}
+                                height={48}
+                                style={{ objectFit: "cover" }}
+                              />
+                            ) : (
+                              <ImageIcon size={24} color="#1976D2" />
+                            )}
+                          </Avatar>
+                          <Tooltip title={blog?.title} arrow placement="top-start">
+                            <Typography
+                              variant="body2"
+                              fontWeight={600}
+                              color="text.primary"
+                              sx={{
+                                maxWidth: 250,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {blog?.title}
+                            </Typography>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={blog?.isPublished ? "Published" : "Draft"}
+                          size="small"
+                          color={blog?.isPublished ? "primary" : "warning"}
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "0.75rem",
+                            borderRadius: 2,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={blog?.isfeatured ? "Yes" : "No"}
+                          size="small"
+                          color={blog?.isfeatured ? "success" : "default"}
+                          variant="outlined"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: "0.75rem",
+                            borderRadius: 2,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Calendar size={14} color="#64748B" />
+                          <Typography variant="body2" color="text.secondary">
+                            {new Date(blog?.publishedDate).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight={600} color="text.primary">
+                          {blog.views.toLocaleString()}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={1}>
+                          <Link href={`/blog/${blog?.slug}`}>
+                            <IconButton
+                              size="small"
+                              sx={{
+                                color: "primary.main",
+                                "&:hover": {
+                                  bgcolor: "primary.50",
+                                },
+                              }}
+                            >
+                              <Eye size={18} />
+                            </IconButton>
+                          </Link>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEdit(blog._id)}
+                            sx={{
+                              color: "info.main",
+                              "&:hover": {
+                                bgcolor: "info.lighter",
+                              },
+                            }}
+                          >
+                            <Edit size={18} />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => openDeleteDialog(blog._id)}
+                            sx={{
+                              color: "error.main",
+                              "&:hover": {
+                                bgcolor: "error.lighter",
+                              },
+                            }}
+                          >
+                            <Trash2 size={18} />
+                          </IconButton>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Paper>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <CustomPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onChange={handlePageChange}
+            />
+          </Box>
         )}
-      </div>
 
-      {totalPages > 1 && (
-        <CustomPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onChange={handlePageChange}
+        {/* Confirm Dialog */}
+        <ConfirmDialog
+          open={confirmOpen}
+          onClose={closeDeleteDialog}
+          onConfirm={confirmDeleteBlog}
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this blog?"
         />
-      )}
-
-      <ConfirmDialog
-        open={confirmOpen}
-        onClose={closeDeleteDialog}
-        onConfirm={confirmDeleteBlog}
-        title="Confirm Deletion"
-        description="Are you sure you want to delete this blog ?"
-      />
-    </div>
+      </Container>
+    </Box>
   );
 }
 

@@ -8,7 +8,6 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { useWishlist } from "@/hooks/useWishlist";
-import { Dialogs } from "./Dialogs";
 
 function HeroSection({ blogData }: any) {
   const featuredBlogs =
@@ -17,8 +16,7 @@ function HeroSection({ blogData }: any) {
   const mainBlog = featuredBlogs[0];
   const sideBlogs = featuredBlogs.slice(1);
 
-  const { wishlistIds, toggleWishlist, openDialog, setOpenDialog } =
-    useWishlist();
+  const { wishlistIds, toggleWishlist } = useWishlist();
 
   if (!featuredBlogs.length) {
     return (
@@ -72,22 +70,22 @@ function HeroSection({ blogData }: any) {
                 </div>
               </div>
               <Link href={`/blog/${mainBlog?.slug}`}>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+                <p className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white">
                   {mainBlog?.title}
-                </h2>
+                </p>
               </Link>
               <p className="text-lg text-gray-200 mb-6 line-clamp-3">
                 {extractTextFromHTML(mainBlog?.content || "", 180)}
               </p>
-              <Button variant="text" className="custom-button">
-                <Link
-                  href={`/blog/${mainBlog?.slug}`}
-                  className="flex items-center gap-2"
-                >
-                  <span>Read More</span>
-                  <MoveRight />
-                </Link>
-              </Button>
+
+              <Link
+                href={`/blog/${mainBlog?.slug}`}
+                className="flex items-center gap-2 font-light text-xs"
+              >
+                <span>Read More...</span>
+                {/* <MoveRight /> */}
+              </Link>
+
             </div>
           </div>
         </div>
@@ -144,7 +142,7 @@ function HeroSection({ blogData }: any) {
         </div>
       </div>
 
-      <Dialogs open={openDialog} handleClose={() => setOpenDialog(false)} />
+      {/* removed Dialogs modal usage */}
     </div>
   );
 }

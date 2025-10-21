@@ -15,6 +15,18 @@ import { useRouter, usePathname } from "next/navigation";
 import { deleteCookies } from "@/utils/delete-cookies";
 import { logout } from "@/slice/authSlice";
 import { useDispatch } from "react-redux";
+import {
+  Box,
+  Paper,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Typography,
+  Button,
+} from "@mui/material";
 
 const sidebarItems = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -36,55 +48,70 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <Box display="flex" height="100vh" bgcolor={'grey.50'}>
       {/* Sidebar */}
-      <div
-        className={`${
-          sidebarOpen ? "w-64" : "w-16"
-        } bg-white shadow-md transition-all duration-300 flex flex-col`}
+      <Paper
+        elevation={1}
+        sx={{
+          width: sidebarOpen ? 256 : 64,
+          transition: 'width 300ms ease',
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 0,
+        }}
       >
-        <div className="flex items-center justify-between p-4 border-b">
-          <span className="text-lg font-bold text-emerald-600">
+        <Box display="flex" alignItems="center" justifyContent="space-between" px={2} py={1.5} borderBottom={1} borderColor="divider">
+          <Typography variant="subtitle1" fontWeight={700} color="success.main">
             {sidebarOpen ? "Admin Panel" : "A"}
-          </span>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-600 hover:text-gray-900"
+          </Typography>
+          <IconButton size="small" onClick={() => setSidebarOpen(!sidebarOpen)}>
+            {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+          </IconButton>
+        </Box>
+        <Box flex={1} overflow="auto">
+          <List disablePadding>
+            {sidebarItems.map((item) => {
+              const active = pathname.includes(item.id);
+              const Icon = item.icon;
+              return (
+                <ListItemButton
+                  key={item.id}
+                  onClick={() => router.push(`/admin/${item.id}`)}
+                  sx={{
+                    py: 1.25,
+                    ...(active
+                      ? { bgcolor: "success.50", color: "success.main", fontWeight: 600 }
+                      : {}),
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36, color: active ? "success.main" : "text.secondary" }}>
+                    <Icon size={18} />
+                  </ListItemIcon>
+                  {sidebarOpen && <ListItemText primary={item.label} />}
+                </ListItemButton>
+              );
+            })}
+          </List>
+        </Box>
+        <Divider />
+        <Box px={2} py={1.5}>
+          <Button
+            fullWidth
+            color="inherit"
+            startIcon={<LogOut size={18} />}
+            onClick={handleLogoutHandler}
+            sx={{ justifyContent: sidebarOpen ? "flex-start" : "center", color: "text.secondary" }}
           >
-            {sidebarOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </button>
-        </div>
-        <nav className="flex-1 overflow-y-auto">
-          {sidebarItems.map((item) => (
-            <button
-              key={item?.id}
-              onClick={() => router.push(`/admin/${item?.id}`)}
-              className={`flex items-center px-4 py-3 w-full text-left hover:bg-emerald-50 transition-colors ${
-                pathname.includes(item.id)
-                  ? "bg-emerald-100 text-emerald-700 font-medium"
-                  : "text-gray-700"
-              }`}
-            >
-              <item.icon className="h-5 w-5 mr-3" />
-              {sidebarOpen && item?.label}
-            </button>
-          ))}
-        </nav>
-        <a href="/" onClick={handleLogoutHandler} className="p-4 border-t">
-          <button className="flex items-center text-sm text-gray-600 hover:text-red-600">
-            <LogOut className="h-5 w-5 mr-2" />
-            {sidebarOpen && "Logout"}
-          </button>
-        </a>
-      </div>
+            {sidebarOpen ? "Logout" : null}
+          </Button>
+        </Box>
+      </Paper>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6">{children}</div>
-    </div>
+      <Box flex={1} overflow="auto" p={3}>
+        {children}
+      </Box>
+    </Box>
   );
 };
 

@@ -13,6 +13,10 @@ const categorySchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    categoryImage: {
+      url: { type: String },
+      publicId: { type: String },
+    },
     isActive: {
       type: Boolean,
       default: true,

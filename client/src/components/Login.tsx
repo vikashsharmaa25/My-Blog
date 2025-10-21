@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/apis/auth-apis";
 import { handleError, handleSuccess } from "@/utils/response-handler";
 import { loginSuccess } from "@/slice/authSlice";
+import { isValidEmail } from "@/common/validation";
 
 const LoginPage: React.FC<any> = ({ onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,7 @@ const LoginPage: React.FC<any> = ({ onSuccess }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const isEmailValid = isValidEmail(email);
 
   const { user } = useSelector((state: any) => state.auth);
 
@@ -28,6 +30,10 @@ const LoginPage: React.FC<any> = ({ onSuccess }) => {
   const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
     if (isLoading) return;
+    if (!isEmailValid) {
+      handleError("Please enter a valid email address");
+      return;
+    }
     setIsLoading(true);
     try {
       const response = await loginUser(email, password);
@@ -98,8 +104,8 @@ const LoginPage: React.FC<any> = ({ onSuccess }) => {
 
         <button
           type="submit"
-          disabled={isLoading || !email || !password}
-          className="w-full text-white bg-red-500 font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading || !isEmailValid || !password}
+          className="w-full text-white bg-blue-500 font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <div className="flex items-center justify-center gap-2">

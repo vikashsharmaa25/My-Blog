@@ -8,7 +8,7 @@ import {
 
 export const registerUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, fullName, email, mobile, password } = req.body;
 
     // Validate required fields
     if (!username || !email || !password) {
@@ -41,7 +41,9 @@ export const registerUser = async (req, res) => {
     // Create and save new user
     const user = new User({
       username,
+      fullName: fullName || "",
       email,
+      mobile: mobile || "",
       password: hashedPassword,
       profilePic: profilePicUrl,
       publicId: publicId || undefined,
@@ -68,20 +70,23 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
 
-    if (!email || !password) {
+    if (!identifier || !password) {
       return res
         .status(400)
-        .json({ success: false, message: "Email and password are required" });
+        .json({ success: false, message: "Username/Email and password are required" });
     }
 
-    const user = await User.findOne({ email }).select("+password");
+    const query = identifier.includes("@")
+      ? { email: identifier }
+      : { username: identifier };
+    const user = await User.findOne(query).select("+password");
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password.",
+        message: "Invalid credentials.",
       });
     }
 

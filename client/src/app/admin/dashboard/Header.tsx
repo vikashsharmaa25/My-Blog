@@ -1,71 +1,139 @@
-"use client";
+"use client"
 
-import { logout } from "@/slice/authSlice";
-import { deleteCookies } from "@/utils/delete-cookies";
-import { Bell, LogOut, Menu, Search, User } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React from "react";
-import { useDispatch } from "react-redux";
+import type React from "react"
 
-function Header({ sidebarOpen, setSidebarOpen }: any) {
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const handleLogoutHandler = () => {
-    deleteCookies();
-    dispatch(logout());
-    router.push("/");
-  };
-  return (
-    <div>
-      <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 lg:hidden"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <h1 className="text-xl font-semibold text-gray-900">
-              Admin Dashboard
-            </h1>
-          </div>
+import { logout } from "@/slice/authSlice"
+import { deleteCookies } from "@/utils/delete-cookies"
+import { Bell, LogOut, Menu, Search, User, Settings } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useDispatch } from "react-redux"
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  TextField,
+  Badge,
+  Menu as MuiMenu,
+  MenuItem,
+  Box,
+  Typography,
+  InputAdornment,
+} from "@mui/material"
 
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent w-64"
-              />
-            </div>
-
-            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                3
-              </span>
-            </button>
-
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-emerald-100 rounded-full flex items-center justify-center">
-                <User className="h-4 w-4 text-emerald-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-700">Admin</span>
-            </div>
-
-            <button
-              onClick={handleLogoutHandler}
-              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
-            >
-              <LogOut className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </header>
-    </div>
-  );
+interface AdminHeaderProps {
+  sidebarOpen: boolean
+  setSidebarOpen: (open: boolean) => void
 }
 
-export default Header;
+function AdminHeader({ sidebarOpen, setSidebarOpen }: AdminHeaderProps) {
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const [showUserMenu, setShowUserMenu] = useState<null | HTMLElement>(null)
+  const [notificationCount] = useState(3)
+
+  const handleLogoutHandler = () => {
+    deleteCookies()
+    dispatch(logout())
+    router.push("/")
+  }
+
+  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setShowUserMenu(event.currentTarget)
+  }
+
+  const handleUserMenuClose = () => {
+    setShowUserMenu(null)
+  }
+
+  return (
+    <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: 1, borderColor: "divider", bgcolor: "background.paper" }}>
+      <Toolbar sx={{ px: 3, py: 1.5 }}>
+        <Box display="flex" alignItems="center" gap={2} flex={1}>
+          <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} size="small" sx={{ display: { lg: "none" }, color: "text.secondary" }}>
+            <Menu size={20} />
+          </IconButton>
+          <Typography variant="h6" fontWeight={600} color="text.primary">
+            Admin Dashboard
+          </Typography>
+        </Box>
+
+        {/* Right Section */}
+        <Box display="flex" alignItems="center" gap={1.5}>
+          {/* Search Bar (hide on small) */}
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
+            <TextField
+              placeholder="Search..."
+              size="small"
+              variant="outlined"
+              margin="dense"
+              color="primary"
+              sx={{ width: 256 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={16} color="#9CA3AF" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+
+          {/* Notifications */}
+          <IconButton size="small" sx={{ color: "text.secondary" }}>
+            <Badge badgeContent={notificationCount} color="error">
+              <Bell size={20} />
+            </Badge>
+          </IconButton>
+
+          {/* Settings */}
+          <IconButton size="small" sx={{ color: "text.secondary" }}>
+            <Settings size={20} />
+          </IconButton>
+
+          {/* User Profile */}
+          <IconButton onClick={handleUserMenuOpen} size="small">
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #10B981, #0D9488)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+              }}
+            >
+              <User size={16} />
+            </Box>
+          </IconButton>
+
+          {/* User Menu Dropdown */}
+          <MuiMenu
+            anchorEl={showUserMenu}
+            open={Boolean(showUserMenu)}
+            onClose={handleUserMenuClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <MenuItem onClick={handleUserMenuClose}>Profile Settings</MenuItem>
+            <MenuItem onClick={handleUserMenuClose}>Change Password</MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleUserMenuClose()
+                handleLogoutHandler()
+              }}
+              sx={{ color: "error.main" }}
+            >
+              <LogOut size={16} style={{ marginRight: 8 }} />
+              Logout
+            </MenuItem>
+          </MuiMenu>
+        </Box>
+      </Toolbar>
+    </AppBar>
+  )
+}
+
+export default AdminHeader

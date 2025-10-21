@@ -113,6 +113,9 @@ function AddBlog({ categoryData }: any) {
             <TextField
               fullWidth
               variant="outlined"
+              size="small"
+              margin="dense"
+              color="primary"
               label="Title"
               placeholder="Enter blog title"
               value={title ?? ""}
@@ -122,6 +125,9 @@ function AddBlog({ categoryData }: any) {
               select
               fullWidth
               variant="outlined"
+              size="small"
+              margin="dense"
+              color="primary"
               label="Category"
               value={category || ""}
               onChange={(e) => setCategory(e.target.value)}
@@ -206,6 +212,9 @@ function AddBlog({ categoryData }: any) {
                 <TextField
                   {...params}
                   variant="outlined"
+                  size="small"
+                  margin="dense"
+                  color="primary"
                   label="Tags"
                   placeholder="Enter tags"
                 />
@@ -215,6 +224,9 @@ function AddBlog({ categoryData }: any) {
               select
               fullWidth
               variant="outlined"
+              size="small"
+              margin="dense"
+              color="primary"
               label="Status"
               value={isPublished ? "Published" : "Draft"}
               onChange={(e) => setIsPublished(e.target.value === "Published")}
@@ -227,8 +239,10 @@ function AddBlog({ categoryData }: any) {
           <div className="flex justify-end space-x-4">
             <Button
               type="submit"
-              variant="outlined"
+              variant="contained"
+              color="primary"
               disabled={loading || !title || !content || !category}
+              className="btn primary_button"
             >
               {loading
                 ? "Processing..."

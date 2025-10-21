@@ -36,6 +36,10 @@ export function middleware(request: NextRequest) {
   // CASE 2: LOGGED-IN USER (not admin)
   // ---------------------------
   if (isLoggedIn && !isAdmin) {
+    // prevent logged-in users from visiting /auth
+    if (pathname.startsWith("/auth")) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
     if (pathname.startsWith("/admin/")) {
       return NextResponse.redirect(new URL("/", request.url));
     }
@@ -50,12 +54,14 @@ export function middleware(request: NextRequest) {
     "/about", // about
     "/blogs", // blog listing
     "/contact", // contact page
+    "/auth", // auth page with mode query
   ];
 
   const isPublicStaticRoute = publicRoutes.includes(pathname);
   const isPublicDynamicBlog = /^\/blog\/[^\/]+$/.test(pathname); // /blog/:id
 
-  if (!isLoggedIn && (isPublicStaticRoute || isPublicDynamicBlog)) {
+  const isAuthRoute = pathname === "/auth";
+  if (!isLoggedIn && (isPublicStaticRoute || isPublicDynamicBlog || isAuthRoute)) {
     return NextResponse.next();
   }
 

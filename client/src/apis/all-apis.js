@@ -82,17 +82,39 @@ export const getCategoryById = async (id) => {
 };
 
 export const addCategory = async (categoryData) => {
+  let payload = categoryData;
+  let headers = {};
+  if (!(categoryData instanceof FormData)) {
+    const fd = new FormData();
+    Object.entries(categoryData || {}).forEach(([k, v]) => fd.append(k, v));
+    payload = fd;
+    headers = { "Content-Type": "multipart/form-data" };
+  } else {
+    headers = { "Content-Type": "multipart/form-data" };
+  }
   const response = await axiosInstance.post(
     `/v1/admin/create-category`,
-    categoryData
+    payload,
+    { headers }
   );
   return response.data;
 };
 
 export const updateCategory = async (categoryData, id) => {
+  let payload = categoryData;
+  let headers = {};
+  if (!(categoryData instanceof FormData)) {
+    const fd = new FormData();
+    Object.entries(categoryData || {}).forEach(([k, v]) => fd.append(k, v));
+    payload = fd;
+    headers = { "Content-Type": "multipart/form-data" };
+  } else {
+    headers = { "Content-Type": "multipart/form-data" };
+  }
   const response = await axiosInstance.put(
     `/v1/admin/update-category/${id}`,
-    categoryData
+    payload,
+    { headers }
   );
   return response.data;
 };

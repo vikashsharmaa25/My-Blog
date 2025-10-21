@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, User, Upload, Camera } from "lucide-react";
 import { userRegister } from "@/apis/auth-apis";
 import { handleError, handleSuccess } from "@/utils/response-handler";
+import { isValidEmail } from "@/common/validation";
 
 function SignupPage({ setActiveTab }: any) {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,7 @@ function SignupPage({ setActiveTab }: any) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const isEmailValid = isValidEmail(formData.email);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -171,7 +173,7 @@ function SignupPage({ setActiveTab }: any) {
 
         <button
           type="submit"
-          disabled={isLoading || !formData.email || !formData?.password}
+          disabled={isLoading || !isEmailValid || !formData?.password}
           className="w-full text-white bg-red-500 font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (

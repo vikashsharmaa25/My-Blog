@@ -7,6 +7,7 @@ import { updateUserProfile } from "@/apis/all-apis";
 import { useDispatch, useSelector } from "react-redux";
 import { handleError, handleSuccess } from "@/utils/response-handler";
 import { loginSuccess } from "@/slice/authSlice";
+import { isValidEmail } from "@/common/validation";
 
 export default function UpdateProfile() {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ export default function UpdateProfile() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useSelector((state: any) => state.auth);
+  const isEmailValid = !formData.email || isValidEmail(formData.email);
 
   useEffect(() => {
     if (user?.user) {
@@ -48,6 +50,10 @@ export default function UpdateProfile() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!isEmailValid) {
+      handleError("Please enter a valid email address");
+      return;
+    }
     setIsLoading(true);
 
     const formDataToSend = new FormData();
@@ -180,7 +186,7 @@ export default function UpdateProfile() {
                   <div className="pt-2">
                     <button
                       type="submit"
-                      disabled={isLoading}
+                      disabled={isLoading || !isEmailValid}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all disabled:opacity-50"
                     >
                       {isLoading ? (

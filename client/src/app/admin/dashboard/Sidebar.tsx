@@ -1,46 +1,77 @@
 import { BarChart3 } from "lucide-react";
 import React from "react";
+import { Box, Paper, Typography, List, ListItemButton, ListItemIcon, ListItemText, Divider } from "@mui/material";
 
 function Sidebar({ sidebarOpen, activeTab, setActiveTab, sidebarItems }: any) {
   return (
-    <>
-      <div
-        className={`${
-          sidebarOpen ? "w-64" : "w-16"
-        } bg-white shadow-lg border-r border-gray-200 transition-all duration-300 flex flex-col`}
-      >
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-              <BarChart3 className="h-5 w-5 text-white" />
-            </div>
-            {sidebarOpen && (
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">BlogAdmin</h2>
-                <p className="text-xs text-gray-500">Management Portal</p>
-              </div>
-            )}
-          </div>
-        </div>
+    <Paper
+      elevation={1}
+      sx={{
+        width: sidebarOpen ? 256 : 64,
+        transition: 'width 300ms ease',
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: 0,
+        borderRight: 1,
+        borderColor: "divider",
+      }}
+    >
+      <Box px={2.5} py={2} borderBottom={1} borderColor="divider" display="flex" alignItems="center" gap={1.5}>
+        <Box
+          sx={{
+            width: 32,
+            height: 32,
+            borderRadius: 1,
+            background: "linear-gradient(90deg, #10B981, #0D9488)",
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <BarChart3 size={18} />
+        </Box>
+        {sidebarOpen && (
+          <Box>
+            <Typography variant="subtitle1" fontWeight={700} color="text.primary">
+              BlogAdmin
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Management Portal
+            </Typography>
+          </Box>
+        )}
+      </Box>
 
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          {sidebarItems.map((item: any) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                activeTab === item.id
-                  ? "bg-emerald-50 text-emerald-700 border-r-2 border-emerald-500"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
-            >
-              <item.icon className="h-5 w-5 flex-shrink-0" />
-              {sidebarOpen && <span className="font-medium">{item.label}</span>}
-            </button>
-          ))}
-        </nav>
-      </div>
-    </>
+      <Box flex={1} overflow="auto">
+        <List sx={{ py: 1 }}>
+          {sidebarItems.map((item: any) => {
+            const active = activeTab === item.id;
+            const Icon = item.icon;
+            return (
+              <ListItemButton
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                sx={{
+                  mx: 1,
+                  borderRadius: 1,
+                  ...(active
+                    ? { bgcolor: "success.50", color: "success.main", borderRight: 2, borderColor: "success.main" }
+                    : {}),
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 32, color: active ? "success.main" : "text.secondary" }}>
+                  <Icon size={18} />
+                </ListItemIcon>
+                {sidebarOpen && <ListItemText primaryTypographyProps={{ fontWeight: 500 }} primary={item.label} />}
+              </ListItemButton>
+            );
+          })}
+        </List>
+      </Box>
+      <Divider />
+    </Paper>
   );
 }
 
