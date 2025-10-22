@@ -2,12 +2,13 @@
 
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import Image from "next/image";
-import { User, Mail, Upload, Camera, Heart, UserCircle2 } from "lucide-react";
+import { User, Mail, Upload, Camera, Heart, UserCircle2, MoveLeft } from "lucide-react";
 import { updateUserProfile } from "@/apis/all-apis";
 import { useDispatch, useSelector } from "react-redux";
 import { handleError, handleSuccess } from "@/utils/response-handler";
 import { loginSuccess } from "@/slice/authSlice";
 import { isValidEmail } from "@/common/validation";
+import Link from "next/link";
 
 export default function UpdateProfile() {
   const dispatch = useDispatch();
@@ -94,10 +95,10 @@ export default function UpdateProfile() {
         <div className="bg-blue-600">
           <div className="mx-auto max-w-5xl px-4 py-10 text-white">
             <div className="flex items-center gap-3">
-              <UserCircle2 className="w-8 h-8" />
-              <h1 className="text-2xl font-semibold">Your Profile</h1>
+              <Link href="/" className="text-white hover:text-white"> <MoveLeft className="w-8 h-8" /></Link>
+              <span className="text-2xl font-semibold">Your Profile</span>
             </div>
-            <p className="opacity-90 mt-1">Manage your personal information and avatar</p>
+            <p className="text-white mt-1">Manage your personal information and avatar</p>
           </div>
         </div>
 

@@ -32,7 +32,9 @@ export const getUserProfile = async () => {
 // blog api
 export const getAllBlog = async (page, limit) => {
   const response = await axiosInstance.get(
-    `/v1/blog?page=${page}&limit=${limit}`
+    `/v1/blog?page=${page}&limit=${limit}`,{
+    next: { revalidate: 60 } 
+  }
   );
   return response.data;
 };

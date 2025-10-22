@@ -22,7 +22,6 @@ import { useRouter } from "next/navigation"
 import { deleteCookies } from "@/utils/delete-cookies"
 import { useDispatch, useSelector } from "react-redux"
 import { logout } from "@/slice/authSlice"
-import { getRoleFromJWT } from "@/middleware"
 import Link from "next/link"
 
 function Header({ categoryData, cookiesData }: any) {
@@ -72,9 +71,7 @@ function Header({ categoryData, cookiesData }: any) {
     }
   }
 
-  const accessToken = cookiesData
-  const userRole = getRoleFromJWT(accessToken)
-  const isAdmin = userRole === "admin"
+  const isAdmin = user?.user?.role === "admin"
 
   const socialIcons = [
     { icon: <Instagram size={16} />, color: "bg-[#E1306C]", label: "Instagram" },
@@ -148,7 +145,7 @@ function Header({ categoryData, cookiesData }: any) {
               </button>
 
               {/* Notifications */}
-              {user && (
+              {/* {user && (
                 <button
                   className="hidden sm:flex p-2 hover:bg-gray-100 rounded-lg transition relative"
                   title="Notifications"
@@ -156,7 +153,7 @@ function Header({ categoryData, cookiesData }: any) {
                   <Bell size={20} className="text-gray-700" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
-              )}
+              )} */}
 
               {/* User Menu */}
               {user ? (

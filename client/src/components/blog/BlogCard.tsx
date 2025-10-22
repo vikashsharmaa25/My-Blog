@@ -18,8 +18,6 @@ import { useWishlist } from "@/hooks/useWishlist";
 function BlogCard({ blogs }: any) {
   const { wishlistIds, toggleWishlist } = useWishlist();
 
-  console.log("blogs", blogs);
-
   return (
     <>
       <div className="py-10">
@@ -97,9 +95,7 @@ function BlogCard({ blogs }: any) {
                 </Box>
 
                 <Link href={`/blog/${blog?.slug}`} style={{ textDecoration: 'none' }}>
-                  <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ mb: 1, '&:hover': { color: 'primary.main' } }}>
-                    {blog.title}
-                  </Typography>
+                 <h6 className="line-clamp-2 mb-2">{blog.title}</h6>
                 </Link>
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>

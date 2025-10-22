@@ -111,11 +111,11 @@ export const loginUser = async (req, res) => {
     res
       .cookie("accessToken", accessToken, {
         ...cookieOptions,
-        maxAge: 15 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
       .cookie("refreshToken", refreshToken, {
         ...cookieOptions,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days
       });
 
     const userResponse = user.toObject();

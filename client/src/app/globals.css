@@ -352,6 +352,9 @@ input:-webkit-autofill:active {
 select:focus {
   background-color: transparent !important;
 }
+.swiper-pagination-bullets{
+  visibility: hidden;
+}
 
 /* for content */
 
