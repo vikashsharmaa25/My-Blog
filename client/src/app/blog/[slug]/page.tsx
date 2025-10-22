@@ -40,9 +40,7 @@ export async function generateMetadata({ params }: any) {
 
 async function Page({ params }: any) {
   const { slug } = params;
-  console.log("slug", slug);
   const apiData = await getAllBlogSlug(slug);
-  console.log("apiData", apiData);
 
   const blog = apiData?.blog;
   const ld = blog
