@@ -31,8 +31,8 @@ function BlogCard({ blogs }: any) {
               Discover the latest insights, tutorials, and articles curated just for you.
             </Typography>
           </div>
-          <Button variant="text" className="hover-underline">
-            <Link href="/blogs">View all</Link>
+          <Button variant="text">
+            <Link href="/blogs" className="lowercase">View all</Link>
           </Button>
         </div>
 
@@ -122,13 +122,6 @@ function BlogCard({ blogs }: any) {
               </Box>
             </Paper>
           ))}
-        </div>
-
-        <div className="flex justify-center items-center mt-5">
-          <Button variant="text" className="hover-underline">
-            <Link href="">view more</Link>
-            <ChevronDown size={18} />
-          </Button>
         </div>
       </div>
     </>

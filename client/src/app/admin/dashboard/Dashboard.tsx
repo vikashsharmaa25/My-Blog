@@ -187,7 +187,7 @@ const Dashboard = ({ blogData, allCount }: any) => {
                         Recent Blogs
                       </Typography>
                     </Box>
-                    <Link href="/admin/blogs" style={{ textDecoration: "none" }}>
+                    <Link href="/admin/blogs" style={{ textDecoration: "none" }} className="lowercase">
                       <Button
                         variant="text"
                         sx={{

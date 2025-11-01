@@ -27,8 +27,8 @@ function AllCategories({ categoryData }: any) {
             Explore curated insights, how-to guides, and trendsetting articles tailored to your interests.
           </Typography>
         </div>
-        <Button variant="text" className="hover-underline">
-          <Link href="/blogs">View all</Link>
+        <Button variant="text">
+          <Link href="/categories" className="lowercase">View all</Link>
         </Button>
       </div>
 
